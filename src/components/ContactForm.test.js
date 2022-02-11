@@ -31,18 +31,69 @@ test('renders ONE error message if user enters less then 5 characters into first
 
 test('renders THREE error messages if user enters no values into any fields.', async () => {
   render(<ContactForm />)
+
+  const firstNameInput = screen.queryByPlaceholderText('Edd');
+  const lastNameInput = screen.queryByPlaceholderText('Burke');
+  const emailInput = screen.queryByPlaceholderText('bluebill1049@hotmail.com');
+
+  userEvent.type(firstNameInput);
+  userEvent.type(lastNameInput);
+  userEvent.type(emailInput);
+
+  const button = screen.getByRole('button');
+  userEvent.click(button);
+
+  const fniError = screen.queryByText(/firstName must have at least 5 characters./i)
+  const lniError = screen.queryByText(/lastName is a required field/i)
+  const eiError = screen.queryByText(/email must be a valid email address/i)
+
+  expect(fniError).toBeInTheDocument();
+  expect(lniError).toBeInTheDocument();
+  expect(eiError).toBeInTheDocument();
 });
 
 test('renders ONE error message if user enters a valid first name and last name but no email.', async () => {
   render(<ContactForm />)
+
+  const firstNameInput = screen.queryByPlaceholderText('Edd');
+  const lastNameInput = screen.queryByPlaceholderText('Burke');
+  const emailInput = screen.queryByPlaceholderText('bluebill1049@hotmail.com');
+
+  userEvent.type(firstNameInput, 'Edward');
+  userEvent.type(lastNameInput, 'Burke');
+  userEvent.type(emailInput);
+
+  const button = screen.getByRole('button');
+  userEvent.click(button);
+
+  const eiError = screen.queryByText(/email must be a valid email address/i)
+  expect(eiError).toBeInTheDocument();
 });
 
 test('renders "email must be a valid email address" if an invalid email is entered', async () => {
   render(<ContactForm />)
+
+  const emailInput = screen.queryByPlaceholderText('bluebill1049@hotmail.com');
+  userEvent.type(emailInput);
+
+  const button = screen.getByRole('button');
+  userEvent.click(button);
+
+  const eiError = screen.queryByText(/email must be a valid email address/i)
+  expect(eiError).toBeInTheDocument();
 });
 
 test('renders "lastName is a required field" if an last name is not entered and the submit button is clicked', async () => {
   render(<ContactForm />)
+
+  const lastNameInput = screen.queryByPlaceholderText('Burke');
+  userEvent.type(lastNameInput);
+
+  const button = screen.getByRole('button');
+  userEvent.click(button);
+
+  const lniError = screen.queryByText(/lastName is a required field/i)
+  expect(lniError).toBeInTheDocument();
 });
 
 test('renders all firstName, lastName and email text when submitted. Does NOT render message if message is not submitted.', async () => {
